@@ -52,4 +52,4 @@ pred_labels = clf.predict(test_features)
 
 # Obtain decision tree accuracy
 acc_decision_tree = round(clf.score(train_features, train_labels), 6)
-print(u'score 准确率为 %.4lf' % acc_decision_tree)
+print(u'score accuracy is %.4lf' % acc_decision_tree)
