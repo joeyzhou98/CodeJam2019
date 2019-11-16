@@ -14,7 +14,7 @@ table_1['ShopAppRatio'] = table_1['n_shoppingApps']/table_1['nTotal_Apps']
 test_data = table_1[['ShopAppRatio','user_id']]\
     .merge(table_3[['gender','source_id','country_id','bin_age','user_id']], on='user_id', how='outer')
 
-# Binary
+# Only in binary, needs improve
 train_data = test_data.merge(table_2[['amount_spend','user_id']].replace("rookie",1).replace("casual",1).replace("player",1)
                    .replace("whale",1), on='user_id', how='outer')
 train_data['amount_spend'].fillna(0,inplace=True)
@@ -22,20 +22,6 @@ train_data['amount_spend'].fillna(0,inplace=True)
 # output
 train_data.to_csv('train_data.csv',index=True)
 test_data.to_csv('test_data.csv',index=True)
-
-# Clean data
-# # Use mean age to fill nan value
-# train_data['Age'].fillna(train_data['Age'].mean(), inplace=True)
-# test_data['Age'].fillna(test_data['Age'].mean(),inplace=True)
-#
-# # Use mean ticket price to fill nan value
-# train_data['Fare'].fillna(train_data['Fare'].mean(), inplace=True)
-# test_data['Fare'].fillna(test_data['Fare'].mean(),inplace=True)
-# print(train_data['Embarked'].value_counts())
-#
-# # Use the most used port to fill nan value
-# train_data['Embarked'].fillna('S', inplace=True)
-# test_data['Embarked'].fillna('S',inplace=True)
 
 # Use mean ShopAppRatio to fill nan value
 train_data['ShopAppRatio'].fillna(train_data['ShopAppRatio'].mean(), inplace=True)
@@ -45,11 +31,22 @@ test_data['ShopAppRatio'].fillna(test_data['ShopAppRatio'].mean(), inplace=True)
 train_data['gender'].fillna(0, inplace=True)
 test_data['gender'].fillna(0, inplace=True)
 
+# Use source_5 to fill nan value
+train_data['source_id'].fillna("source_5", inplace=True)
+test_data['source_id'].fillna("source_5", inplace=True)
+
+# Use country_0 to fill nan value
+train_data['country_id'].fillna("country_1", inplace=True)
+test_data['country_id'].fillna("country_1", inplace=True)
+
+# Use (35.0, 40.0] to fill nan value
+train_data['bin_age'].fillna("(35.0, 40.0]", inplace=True)
+test_data['bin_age'].fillna("(35.0, 40.0]", inplace=True)
 
 # Select features
-features = ['Pclass', 'Sex', 'Age', 'SibSp', 'Parch', 'Fare', 'Embarked']
+features = ['ShopAppRatio', 'gender', 'source_id', 'country_id', 'bin_age']
 train_features = train_data[features]
-train_labels = train_data['Survived']
+train_labels = train_data['amount_spend']
 test_features = test_data[features]
 
 dvec=DictVectorizer(sparse=False)
@@ -67,20 +64,8 @@ pred_labels = clf.predict(test_features)
 
 # Obtain decision tree accuracy
 acc_decision_tree = round(clf.score(train_features, train_labels), 6)
-print(u'score accuracy is %.4lf' % acc_decision_tree)
+print('Score accuracy is %.4lf' % acc_decision_tree)
 
-#Display our predictions - they are either 0 or 1 for each training instance
-#depending on whether our algorithm believes the person survived or not.
-pred_labels
-
-#Create a  DataFrame with the passengers ids and our prediction regarding whether they survived or not
-submission = pd.DataFrame({'PassengerId':test_data['PassengerId'],'Survived':pred_labels})
-
-#Visualize the first 5 rows
-submission.head()
-
-#Convert DataFrame to a csv file that can be uploaded
-#This is saved in the same directory as your notebook
-filename = 'Titanic Predictions 1.csv'
-
-submission.to_csv(filename,index=False)
+# Create a  DataFrame
+submission = pd.DataFrame({'user_id':test_data['user_id'],'amount_spend':pred_labels})
+submission.to_csv('Game Purchase Predictions.csv',index=True)
