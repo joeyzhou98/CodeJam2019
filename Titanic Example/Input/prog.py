@@ -5,11 +5,11 @@ train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
 
 #Drop features we are not going to use
-train = train.drop(['Name', 'Ticket', 'Cabin'],axis=1)
-test = test.drop(['Name', 'Ticket', 'Cabin'],axis=1)
+train = train.drop(['Name','SibSp','Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked'],axis=1)
+test = test.drop(['Name','SibSp','Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked'],axis=1)
 
 #Look at the first 3 rows of our training data
-train.head(6)
+train.head(3)
 
 # Convert ['male','female'] to [1,0] so that our decision tree can be built
 for df in [train, test]:
@@ -20,15 +20,15 @@ train['Age'] = train['Age'].fillna(0)
 test['Age'] = test['Age'].fillna(0)
 
 # Select feature column names and target variable we are going to use for training
-features = ['Pclass', 'Sex_binary', 'Age', 'SibSp', 'Parch', 'Fare']
+features = ['Pclass', 'Age', 'Sex_binary']
 target = 'Survived'
 
 # Look at the first 3 rows (we have over 800 total rows) of our training data.;
 # This is input which our classifier will use as an input.
-train[features].head(6)
+train[features].head(3)
 
 #Display first 3 target variables
-train[target].head(6).values
+train[target].head(3).values
 
 from sklearn.tree import DecisionTreeClassifier
 
@@ -37,6 +37,23 @@ clf = DecisionTreeClassifier()
 
 #Fit our classifier using the training features and the training target values
 clf.fit(train[features],train[target])
+
+#Create decision tree ".dot" file
+
+#Remove each '#' below to uncomment the two lines and export the file.
+from sklearn.tree import export_graphviz
+export_graphviz(clf,out_file='titanic_tree.dot',feature_names=features,rounded=True,filled=True,class_names=['Survived','Did not Survive'])
+
+#Display decision tree
+
+#Blue on a node or leaf means the tree thinks the person did not survive
+#Orange on a node or leaf means that tree thinks that the person did survive
+
+#In Chrome, to zoom in press control +. To zoom out, press control -. If you are on a Mac, use Command.
+
+#Remove each '#' below to run the two lines below.
+from IPython.core.display import Image, display
+display(Image('titanic_tree.png', width=1900, unconfined=True))
 
 #Make predictions using the features from the test data set
 predictions = clf.predict(test[features])
@@ -58,6 +75,3 @@ filename = 'Titanic Predictions 1.csv'
 submission.to_csv(filename,index=False)
 
 print('Saved file: ' + filename)
-
-acc_decision_tree = round(clf.score(train[features],train[target]), 6)
-print(u'score 准确率为 %.4lf' % acc_decision_tree)
