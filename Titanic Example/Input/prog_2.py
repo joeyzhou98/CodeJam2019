@@ -53,3 +53,19 @@ pred_labels = clf.predict(test_features)
 # Obtain decision tree accuracy
 acc_decision_tree = round(clf.score(train_features, train_labels), 6)
 print(u'score accuracy is %.4lf' % acc_decision_tree)
+
+#Display our predictions - they are either 0 or 1 for each training instance
+#depending on whether our algorithm believes the person survived or not.
+pred_labels
+
+#Create a  DataFrame with the passengers ids and our prediction regarding whether they survived or not
+submission = pd.DataFrame({'PassengerId':test_data['PassengerId'],'Survived':pred_labels})
+
+#Visualize the first 5 rows
+submission.head()
+
+#Convert DataFrame to a csv file that can be uploaded
+#This is saved in the same directory as your notebook
+filename = 'Titanic Predictions 1.csv'
+
+submission.to_csv(filename,index=False)
