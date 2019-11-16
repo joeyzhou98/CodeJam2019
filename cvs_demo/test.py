@@ -1,8 +1,6 @@
-import numpy as np
 import pandas as pd
 
 # Load Data
-from numpy import NaN
 
 table_1 = pd.read_csv('./user_apps_statistics.csv')
 table_2 = pd.read_csv('./user_purchase_events.csv')
@@ -12,12 +10,12 @@ table_3 = pd.read_csv('./user_table.csv')
 table_1['ShopAppRatio'] = table_1['n_shoppingApps']/table_1['nTotal_Apps']
 
 # combine
-train = table_1[['ShopAppRatio','user_id']]\
+test = table_1[['ShopAppRatio','user_id']]\
     .merge(table_3[['gender','source_id','country_id','bin_age','user_id']], on='user_id', how='outer')
 
-test = train.merge(table_2[['amount_spend','user_id']].replace("rookie",1).replace("casual",3).replace("player",5)
+train = test.merge(table_2[['amount_spend','user_id']].replace("rookie",1).replace("casual",3).replace("player",5)
                    .replace("whale",10), on='user_id', how='outer')
-test['amount_spend'].fillna(0,inplace=True)
+train['amount_spend'].fillna(0,inplace=True)
 
 # output
 filename_1 = 'train.csv'
