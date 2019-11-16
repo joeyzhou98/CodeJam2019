@@ -5,11 +5,11 @@ train = pd.read_csv('train.csv')
 test = pd.read_csv('test.csv')
 
 #Drop features we are not going to use
-train = train.drop(['Name','SibSp','Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked'],axis=1)
-test = test.drop(['Name','SibSp','Parch', 'Ticket', 'Fare', 'Cabin', 'Embarked'],axis=1)
+train = train.drop(['Name', 'Ticket', 'Cabin'],axis=1)
+test = test.drop(['Name', 'Ticket', 'Cabin'],axis=1)
 
 #Look at the first 3 rows of our training data
-train.head(3)
+train.head(6)
 
 # Convert ['male','female'] to [1,0] so that our decision tree can be built
 for df in [train, test]:
@@ -20,15 +20,15 @@ train['Age'] = train['Age'].fillna(0)
 test['Age'] = test['Age'].fillna(0)
 
 # Select feature column names and target variable we are going to use for training
-features = ['Pclass', 'Age', 'Sex_binary']
+features = ['Pclass', 'Sex_binary', 'Age', 'SibSp', 'Parch', 'Fare']
 target = 'Survived'
 
 # Look at the first 3 rows (we have over 800 total rows) of our training data.;
 # This is input which our classifier will use as an input.
-train[features].head(3)
+train[features].head(6)
 
 #Display first 3 target variables
-train[target].head(3).values
+train[target].head(6).values
 
 from sklearn.tree import DecisionTreeClassifier
 
@@ -58,3 +58,6 @@ filename = 'Titanic Predictions 1.csv'
 submission.to_csv(filename,index=False)
 
 print('Saved file: ' + filename)
+
+acc_decision_tree = round(clf.score(train[features],train[target]), 6)
+print(u'score 准确率为 %.4lf' % acc_decision_tree)
