@@ -3,16 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <title>Form</title>
+    <style>
+        .fColor{
+            background-color: rgb(255, 204, 102);
+            border-bottom-style: dot-dot-dash;
+            border-bottom-color: #444444;
+        }
+    </style>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
 </head>
-<body>
+<body bgcolor="aqua">
     <h1 align="middle">TEST DATA SET COLLECTING</h1>
-    <form action="/home" method="get">
-        Input your data set:<br>
-        <input type="text" name="data"><br>
-        <br>
-        <input type="submit">
-        {{ result }}
+    <br>
+    <h4>Please enter the data set:</h4>
+    <div class="card-body">
+        <form class="fColor" action="/home" method="get" id="form">
+            <div align="middle" class="form-group">
+            Input your data set:<br>
+            <input type="text" name="data"><br>
+            </div>
 
-    </form>
+            {{ result }}
+
+
+        </form>
+        <br>
+        <button type="submit" form="form" class="btn btn-primary">Submit</button>
+    </div>
+    <div align ="right">
+    <img  src="https://images.unsplash.com/photo-1486312338219-ce68d2c6f44d?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&w=1000&q=80" height="380" width="1100">
+    </div>
 </body>
-</html>
