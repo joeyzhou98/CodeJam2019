@@ -28,20 +28,28 @@ train_data['ShopAppRatio'].fillna(train_data['ShopAppRatio'].mean(), inplace=Tru
 test_data['ShopAppRatio'].fillna(test_data['ShopAppRatio'].mean(), inplace=True)
 
 # Use 0 to fill nan gender
-train_data['gender'].fillna(0, inplace=True)
-test_data['gender'].fillna(0, inplace=True)
+train_data['gender'].fillna(train_data['gender'].median(), inplace=True)
+test_data['gender'].fillna(test_data['gender'].median(), inplace=True)
+
+# print(test_data['gender'].median())
 
 # Use source_5 to fill nan value
-train_data['source_id'].fillna("source_5", inplace=True)
-test_data['source_id'].fillna("source_5", inplace=True)
+train_data['source_id'].fillna(pd.Series(train_data['source_id'].mode()).values[0], inplace=True)
+test_data['source_id'].fillna(pd.Series(test_data['source_id'].mode()).values[0], inplace=True)
+
+# print(pd.Series(train_data['source_id'].mode()).values[0])
 
 # Use country_0 to fill nan value
-train_data['country_id'].fillna("country_1", inplace=True)
-test_data['country_id'].fillna("country_1", inplace=True)
+train_data['country_id'].fillna(pd.Series(train_data['country_id'].mode()).values[0], inplace=True)
+test_data['country_id'].fillna(pd.Series(test_data['country_id'].mode()).values[0], inplace=True)
+
+# print(pd.Series(train_data['country_id'].mode()).values[0])
 
 # Use (35.0, 40.0] to fill nan value
-train_data['bin_age'].fillna("(35.0, 40.0]", inplace=True)
-test_data['bin_age'].fillna("(35.0, 40.0]", inplace=True)
+train_data['bin_age'].fillna(pd.Series(train_data['bin_age'].mode()).values[0], inplace=True)
+test_data['bin_age'].fillna(pd.Series(test_data['bin_age'].mode()).values[0], inplace=True)
+
+# print(pd.Series(train_data['bin_age'].mode()).values[0])
 
 # Select features
 features = ['ShopAppRatio', 'gender', 'source_id', 'country_id', 'bin_age']
@@ -51,7 +59,7 @@ test_features = test_data[features]
 
 dvec=DictVectorizer(sparse=False)
 train_features=dvec.fit_transform(train_features.to_dict(orient='record'))
-print(dvec.feature_names_)
+# print(dvec.feature_names_)
 
 # Create ID3 Decision tree
 clf = DecisionTreeClassifier(criterion='entropy')
