@@ -19,11 +19,28 @@
     <div class="card-body">
         <form class="fColor" action="/home" method="get" id="form">
             <div align="middle" class="form-group">
-                Input your data set:
-                <br>
-                <input type="text" name="data">
-                <br>
+            Input your data set:<br>
+            <input type="text" name="data"><br>
             </div>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile01"
+                       aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+            </div>
+            <br>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile02"
+                       aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+            </div>
+            <br>
+            <div class="custom-file">
+                <input type="file" class="custom-file-input" id="inputGroupFile03"
+                       aria-describedby="inputGroupFileAddon01">
+                <label class="custom-file-label" for="inputGroupFile01">Choose file</label>
+            </div>
+
+
             {{ result }}
 
 
