@@ -1,6 +1,77 @@
 from flask import Flask, render_template, redirect, url_for, request
 app = Flask(__name__)
 
+import numpy as np
+import pandas as pd
+from sklearn.feature_extraction import DictVectorizer
+from sklearn.tree import DecisionTreeClassifier
+
+# Load Data
+table_1 = pd.read_csv('./mistplay-challenge/user_apps_statistics.csv')
+table_2 = pd.read_csv('./mistplay-challenge/user_purchase_events.csv')
+table_3 = pd.read_csv('./mistplay-challenge/user_table.csv')
+
+# process
+table_1['ShopAppRatio'] = table_1['n_shoppingApps']/table_1['nTotal_Apps']
+
+# combine
+test_data = table_1[['ShopAppRatio','user_id']]\
+    .merge(table_3[['gender','source_id','country_id','bin_age','user_id']], on='user_id', how='outer')
+
+# Only in binary, needs improve
+train_data = test_data.merge(table_2[['amount_spend','user_id']].replace("rookie",1).replace("casual",1).replace("player",1)
+                   .replace("whale",1), on='user_id', how='outer')
+train_data['amount_spend'].fillna(0,inplace=True)
+
+# output
+train_data.to_csv('train_data.csv',index=True)
+test_data.to_csv('test_data.csv',index=True)
+
+# Use mean ShopAppRatio to fill nan value
+train_data['ShopAppRatio'].fillna(train_data['ShopAppRatio'].mean(), inplace=True)
+test_data['ShopAppRatio'].fillna(test_data['ShopAppRatio'].mean(), inplace=True)
+
+# Use 0 to fill nan gender
+train_data['gender'].fillna(train_data['gender'].median(), inplace=True)
+test_data['gender'].fillna(test_data['gender'].median(), inplace=True)
+
+# print(test_data['gender'].median())
+
+# Use source_5 to fill nan value
+train_data['source_id'].fillna(pd.Series(train_data['source_id'].mode()).values[0], inplace=True)
+test_data['source_id'].fillna(pd.Series(test_data['source_id'].mode()).values[0], inplace=True)
+
+# print(pd.Series(train_data['source_id'].mode()).values[0])
+
+# Use country_0 to fill nan value
+train_data['country_id'].fillna(pd.Series(train_data['country_id'].mode()).values[0], inplace=True)
+test_data['country_id'].fillna(pd.Series(test_data['country_id'].mode()).values[0], inplace=True)
+
+# print(pd.Series(train_data['country_id'].mode()).values[0])
+
+# Use (35.0, 40.0] to fill nan value
+# train_data['bin_age'].fillna(pd.Series(train_data['bin_age'].mode()).values[0], inplace=True)
+# test_data['bin_age'].fillna(pd.Series(test_data['bin_age'].mode()).values[0], inplace=True)
+
+# print(pd.Series(train_data['bin_age'].mode()).values[0])
+
+# Select features
+features = ['ShopAppRatio', 'gender', 'source_id', 'country_id']
+train_features = train_data[features]
+train_labels = train_data['amount_spend']
+test_features = test_data[features]
+
+dvec=DictVectorizer(sparse=False)
+train_features=dvec.fit_transform(train_features.to_dict(orient='record'))
+# print(dvec.feature_names_)
+
+# Create ID3 Decision tree
+clf = DecisionTreeClassifier(criterion='entropy')
+# Train the decision tree
+clf.fit(train_features, train_labels)
+
+test_features=dvec.transform(test_features.to_dict(orient='record'))
+
 
 @app.route('/')
 def root():
@@ -13,7 +84,12 @@ def home():
     if data is None:
         return render_template("home.html", result="No results")
     else:
-        return render_template("home.html", result=data)
+        features = ['ShopAppRatio', 'gender', 'source_id', 'country_id']
+        data = [data.split(",")]
+        # df = pd.DataFrame(data, columns=features,  dtype=np.dtype([('float', 'int', 'str', 'str')]))
+        # print(df)
+        pred_labels = clf.predict(data)
+        return render_template("home.html", result=pred_labels)
 
 
 app.run(port=5000)
